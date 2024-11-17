@@ -67,3 +67,4 @@ if __name__ == '__main__':
     print(solve_c(wordsc, textc))
 
 # 11976 11942
+
