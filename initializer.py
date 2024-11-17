@@ -14,33 +14,27 @@ def parse_c(lines):
 
 
 def solve_a(data):
-    data = parse(data)
-
     return None
 
 
 def solve_b(data):
-    data = parse(data)
-
     return None
 
 
 def solve_c(data):
-    data = parse(data)
-
     return None
 
 
 def read_input(part):
-    data = [line.rstrip() for line in open(f'input/2024-2{part}.txt').readlines()]
+    data = [line.rstrip() for line in open(f'input/2024-2{{part}}.txt').readlines()]
 
     return data
 
 
 def main():
     dataa = parse_a(read_input('a'))
-    datab = parse_a(read_input('a'))
-    datac = parse_a(read_input('a'))
+    datab = parse_a(read_input('b'))
+    datac = parse_a(read_input('c'))
 
     return solve_a(dataa), solve_b(datab), solve_c(datac)
 
