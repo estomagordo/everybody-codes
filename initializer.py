@@ -25,8 +25,8 @@ def solve_c(data):
     return None
 
 
-def read_input(part):
-    data = [line.rstrip() for line in open(f'input/2024-2{{part}}.txt').readlines()]
+def read_input(day, part):
+    data = [line.rstrip() for line in open(f'input/2024-{day}{{part}}.txt').readlines()]
 
     return data
 
