@@ -33,8 +33,8 @@ def read_input(part):
 
 def main():
     dataa = parse_a(read_input('a'))
-    datab = parse_a(read_input('b'))
-    datac = parse_a(read_input('c'))
+    datab = parse_b(read_input('b'))
+    datac = parse_c(read_input('c'))
 
     return solve_a(dataa), solve_b(datab), solve_c(datac)
 
