@@ -24,7 +24,6 @@ def solve_c(words, texts):
 
     used_symbols = set()
     matrix = [text*2 for text in texts]
-    # matrix = matrix*7
 
     for word in words:
         wordlen = len(word)
@@ -44,7 +43,7 @@ def solve_c(words, texts):
     
     assert all(0 <= pair[0] < height for pair in used_symbols)
     assert all(0 <= pair[1] < width for pair in used_symbols)
-    # for s in sorted(used_symbols):print(s)
+    
     return len(used_symbols)
 
 
@@ -65,6 +64,3 @@ if __name__ == '__main__':
     print(solve_a(wordsa, texta))
     print(solve_b(wordsb, textb))
     print(solve_c(wordsc, textc))
-
-# 11976 11942
-
