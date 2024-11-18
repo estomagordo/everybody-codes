@@ -34,14 +34,14 @@ def advanced_update(grid):
                     putting = list(combination)[0]
                     grid[y][x] = putting
                     written.append((y, x, putting))
-
+    
     for y, row in enumerate(grid):
         for x, character in enumerate(row):
             if character == '.':
                 rowc = Counter(c for c in row)
                 colc = Counter(line[x] for line in grid)
 
-                if rowc['.'] == 1 and colc['.'] == 1 and rowc['?'] == 1 and colc['?'] == 1:
+                if rowc['.'] == 1 and colc['.'] == 1 and (rowc['?'] == 1 or colc['?'] == 1):
                     target = ''
 
                     for c in rowc:
@@ -119,8 +119,8 @@ def solve_c(megagrid):
     while changed:
         changed = False
 
-        for y in range(0, height, grid_height):
-            for x in range(0, width, grid_width):
+        for y in range(0, height, grid_height-2):
+            for x in range(0, width, grid_width-2):
                 updates = advanced_update([row[x:x+grid_width] for row in megagrid[y:y+grid_height]])
                 
                 if updates:
@@ -130,8 +130,8 @@ def solve_c(megagrid):
 
     score = 0
 
-    for y in range(0, height, grid_height):
-        for x in range(0, width, grid_width):
+    for y in range(0, height, grid_height-2):
+        for x in range(0, width, grid_width-2):
             password = ''.join(''.join(row[x+2:x+6]) for row in megagrid[y+2:y+6])
             
             if '.' not in password:
