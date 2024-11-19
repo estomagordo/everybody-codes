@@ -38,8 +38,37 @@ def solve_b(priests):
     return (used-n) * ((level - 2) * 2 + 1)
 
 
-def solve_c(data):
-    return None
+def solve_c(priests):
+    acolytes = 5
+    n = 160
+
+    level = 2
+    used = 1
+    prevthick = 1
+    removal = 0
+    layers = [[1]]
+
+    while used-removal < n:
+        thickness = (prevthick * priests) % acolytes + acolytes
+        width = ((level - 1) * 2 + 1)
+        used += width * thickness
+        level += 1
+        prevthick = thickness
+        layer = [thickness]
+
+        for i in range(1, width-1):
+            layer.append(thickness + layers[-1][i-1])
+
+        layer.append(thickness)
+        layers.append(layer)
+
+        removal = 0
+
+        for height in layer[1:-1]:
+            removal += (priests * width * height) % acolytes
+
+    return used-removal-n
+    # return (used-n) * ((level - 2) * 2 + 1)
 
 
 def read_input(part):
@@ -51,7 +80,7 @@ def read_input(part):
 def main():
     dataa = parse_a(read_input('a'))
     datab = parse_a(read_input('b'))
-    datac = parse_c(read_input('c'))
+    datac = parse_a(read_input('c'))
 
     return solve_a(dataa), solve_b(datab), solve_c(datac)
 
