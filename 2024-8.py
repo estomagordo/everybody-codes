@@ -39,8 +39,8 @@ def solve_b(priests):
 
 
 def solve_c(priests):
-    acolytes = 5
-    n = 160
+    acolytes = 10
+    n = 202400000
 
     level = 2
     used = 1
@@ -68,7 +68,6 @@ def solve_c(priests):
             removal += (priests * width * height) % acolytes
 
     return used-removal-n
-    # return (used-n) * ((level - 2) * 2 + 1)
 
 
 def read_input(part):
