@@ -21,7 +21,10 @@ def parse_b(lines):
 
 
 def parse_c(lines):
-    return None
+    meteors = [list(map(int, line.split())) for line in lines]
+    height = max(meteor[1] for meteor in meteors)
+
+    return [[height-meteor[1], meteor[0]] for meteor in meteors], height
 
 
 def trajectory(y, x, power, floor):
@@ -55,8 +58,7 @@ def solve_a(catapults, targets):
             catval = ord(c) - ord('A') + 1
 
             for power in range(1, 40):
-                cells = trajectory(cy, cx, power, floor+1)
-                for ty, tx in cells:
+                for ty, tx in trajectory(cy, cx, power, floor+1):
                     if (ty, tx) == (y, x):
                         result = max(result, catval*power*value)
                         break
@@ -73,8 +75,50 @@ def solve_b(data):
     return None
 
 
-def solve_c(data):
-    return None
+def solve_c(meteors, height):
+    maxwait = 300
+    maxpower = 300
+    score = 0
+    catapults = [
+        (height, 0, 1),
+        (height-1, 0, 2),
+        (height-2, 0, 3),
+    ]
+
+    for my, mx in meteors:
+        origmy = my
+        origmx = mx
+        best = (10**6, 10**6)
+        metrajectory = []
+        
+        while my <= height and mx >= 0:
+            metrajectory.append((my, mx))
+            my += 1
+            mx -= 1
+
+        for cy, cx, value in catapults:
+            stoplook = len(metrajectory)
+            for delay in range(maxwait):
+                for power in range(1, maxpower):
+                    path = trajectory(cy, cx, power, height)
+
+                    for i in range(delay, stoplook):
+                        if i >= len(path):
+                            break
+                        
+                        if metrajectory[i] == path[i]:
+                            cmy, cmx = metrajectory[i]
+                            print('Hit!', cmy, cmx, origmy, origmx, value, power, delay, value*power)
+                            best = min(best, (cmy, value*power))
+                            stoplook = i
+                            break
+
+        if best == (10**6, 10**6):
+            print('panic!')
+
+        score += best[1]
+
+    return score
 
 
 def read_input(part):
@@ -86,9 +130,9 @@ def read_input(part):
 def main():
     catapultsa, targetsa = parse_a(read_input('a'))
     catapultsb, targetsb = parse_a(read_input('b'))
-    datac = parse_c(read_input('c'))
+    meteorsc, heightc = parse_c(read_input('c'))
 
-    return solve_a(catapultsa, targetsa), solve_a(catapultsb, targetsb), solve_c(datac)
+    return solve_a(catapultsa, targetsa), solve_a(catapultsb, targetsb), solve_c(meteorsc, heightc)
 
 
 if __name__ == '__main__':
