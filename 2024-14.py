@@ -1,6 +1,3 @@
-from functools import cache
-
-
 def parse_a(lines):
     directions = {
         'R': (1, 0, 0),
@@ -81,17 +78,13 @@ def solve_c(trees):
 
         leaves.add(tuple(position))
 
-    @cache
-    def distance(start, goal):
-        used = {start}
+    def distance(used, start, goal):
+        seen = {start}
         frontier = [(0, start)]
 
         for d, pos in frontier:
             if pos == goal:
-                print(d)
                 return d
-            
-            used.add(pos)
             
             for delta in (-1, 1):
                 for dimension in range(3):
@@ -99,17 +92,18 @@ def solve_c(trees):
                     step[dimension] += delta
                     t = tuple(step)
 
-                    if t in seen and t not in used:
+                    if t in used and t not in seen:
+                        seen.add(t)
                         frontier.append((d+1, t))
+
+        return 10**6
 
     height = max(leaf[1] for leaf in leaves)
     best = 10**6
-    print(height, len(leaves))
-    print(leaves)
 
     for y in range(height+1):
         start = (0, y, 0)
-        score = sum(distance(start, leaf) for leaf in leaves)
+        score = sum(distance(seen, start, leaf) for leaf in leaves)
         best = min(best, score)
 
     return best
