@@ -76,8 +76,8 @@ def solve_b(data):
 
 
 def solve_c(meteors, height):
-    maxwait = 300
-    maxpower = 300
+    maxwait = 600
+    maxpower = 1300
     score = 0
     catapults = [
         (height, 0, 1),
@@ -85,7 +85,12 @@ def solve_c(meteors, height):
         (height-2, 0, 3),
     ]
 
-    for my, mx in meteors:
+    highest_power = 0
+    latest_delay = 0
+
+    for mi, meteor in enumerate(meteors):
+        print(mi, highest_power, latest_delay)
+        my, mx = meteor
         origmy = my
         origmx = mx
         best = (10**6, 10**6)
@@ -100,16 +105,23 @@ def solve_c(meteors, height):
             stoplook = len(metrajectory)
             for delay in range(maxwait):
                 for power in range(1, maxpower):
-                    path = trajectory(cy, cx, power, height)
+                    path = trajectory(cy, cx, power, height+1)
 
-                    for i in range(delay, stoplook):
+                    for i in range(stoplook):
                         if i >= len(path):
                             break
                         
-                        if metrajectory[i] == path[i]:
+                        if i+delay >= len(metrajectory):
+                            break
+                        if metrajectory[i+delay] == path[i]:
+                            
                             cmy, cmx = metrajectory[i]
-                            print('Hit!', cmy, cmx, origmy, origmx, value, power, delay, value*power)
-                            best = min(best, (cmy, value*power))
+                            # print('Hit!', i, cy, cx, cmy, cmx, origmy, origmx, value, power, delay, value*power)
+                            candidate = (height-cmy, value*power)
+                            if candidate < best:
+                                best = candidate
+                                highest_power = max(highest_power, power)
+                                latest_delay = max(latest_delay, delay)
                             stoplook = i
                             break
 
