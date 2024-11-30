@@ -1,3 +1,6 @@
+from collections import defaultdict
+
+
 def parse_a(lines):
     key = lines[0]
     grid = [list(line) for line in lines[2:]]
@@ -49,6 +52,8 @@ def solve_c(key, grid):
     width = len(grid[0])
     n = len(key)
     iterations = 0
+    wordseen = defaultdict(list)
+    modseen = defaultdict(list)
 
     while True:
         pos = 0
@@ -65,8 +70,11 @@ def solve_c(key, grid):
             if '>' in row and '<' in row:
                 if row.index('>') < row.index('<'):
                     word = ''.join(row[row.index('>')+1:row.index('<')])
-                    if '.' not in word:
-                        print(iterations, m%iterations, word)
+                    if '.' not in word and ';' not in word:
+                        mod = m%iterations
+                        wordseen[word].append(mod)
+                        modseen[mod].append(iterations)
+                        print(iterations, mod, word, wordseen[word], modseen[mod])
 
 
 def read_input(part):
@@ -87,3 +95,4 @@ if __name__ == '__main__':
     print(main())
 
 # length and first correct - 698EXO2365278225
+# same 698EEE2365278225
