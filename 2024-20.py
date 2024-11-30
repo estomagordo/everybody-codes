@@ -20,6 +20,10 @@ def turns(dy):
     return ((0, 1), (0, -1))
 
 
+def distance(a, b):
+    return abs(a[0]-b[0]) + abs(a[1]-b[1])
+
+
 def solve_a(grid):
     t = 100
     start_altitude = 1000
@@ -87,37 +91,67 @@ def solve_b(grid):
     width = len(grid[0])
     sy = 0
     sx = 0
+    checkpoint_locations = {}
 
     for y, row in enumerate(grid):
         for x, c in enumerate(row):
             if c == 'S':
                 sy = y
                 sx = x
+            elif c.isalpha():
+                checkpoint_locations[c] = (y, x)
+
+    remaining_distances = [distance((sy, sx), checkpoint_locations['C'])]
+    remaining_distances.append(remaining_distances[-1] + distance(checkpoint_locations['B'], checkpoint_locations['C']))
+    remaining_distances.append(remaining_distances[-1] + distance(checkpoint_locations['A'], checkpoint_locations['B']))
+
+    def heuristic(y, x, altitude, checkpoints):
+        checkpoint_count = len(checkpoints)
+        remaining_distance = 0
+
+        if checkpoint_count == 3:
+            remaining_distance = distance((y, x), (sy, sx))
+        if checkpoint_count == 2:
+            remaining_distance = distance((y, x), checkpoint_locations['C']) + remaining_distances[0]
+        if checkpoint_count == 1:
+            remaining_distance = distance((y, x), checkpoint_locations['B']) + remaining_distances[1]
+        if checkpoint_count == 0:
+            remaining_distance = distance((y, x), checkpoint_locations['A']) + remaining_distances[2]
+
+        altitude_difference = max(0, start_altitude-altitude)
+
+        return max(remaining_distance, altitude_difference)
                 
     bests = {}
     frontier = []
 
     if sy > 0:
-        frontier.append((0, start_altitude, sy, sx, -1, 0, ''))
-        bests[(sy, sx, -1, 0, 0, '')] = start_altitude
+        h = heuristic(sy, sx, start_altitude, '')
+        heappush(frontier, (h, 0, start_altitude, sy, sx, -1, 0, ''))
+        bests[(sy, sx, -1, 0, 0, '')] = h
     if sy < height-1:
-        frontier.append((0, start_altitude, sy, sx, 1, 0, ''))
-        bests[(sy, sx, 1, 0, 0, '')] = start_altitude
+        h = heuristic(sy, sx, start_altitude, '')
+        heappush(frontier, (h, 0, start_altitude, sy, sx, 1, 0, ''))
+        bests[(sy, sx, 1, 0, 0, '')] = h
     if sx > 0:
-        frontier.append((0, start_altitude, sy, sx, 0, -1, ''))
-        bests[(sy, sx, 0, -1, 0, '')] = start_altitude
+        h = heuristic(sy, sx, start_altitude, '')
+        heappush(frontier, (h, 0, start_altitude, sy, sx, 0, -1, ''))
+        bests[(sy, sx, 0, -1, 0, '')] = h
     if sx < width-1:
-        frontier.append((0, start_altitude, sy, sx, 0, 1, ''))
-        bests[(sy, sx, 0, 1, 0, '')] = start_altitude
+        h = heuristic(sy, sx, start_altitude, '')
+        heappush(frontier, (h, 0, start_altitude, sy, sx, 0, 1, ''))
+        bests[(sy, sx, 0, 1, 0, '')] = h
 
     latest = 0
 
-    for t, altitude, y, x, dy, dx, checkpoints in frontier:
+    while frontier:
+        h, t, altitude, y, x, dy, dx, checkpoints = heappop(frontier)
+
         if t > latest:
             latest = t
-            print(t)
+            print(t, len(frontier), altitude)
 
-        if y == sy and x == sx and altitude >= start_altitude and checkpoints == checkpoint_target:
+        if h == t:
             return t
         
         moves = [[y+dy, x+dx, dy, dx]]
@@ -145,11 +179,12 @@ def solve_b(grid):
                     if c not in newcheck:
                         newcheck += c
 
-                seenkey = (ny, nx, ndy, ndx, t, newcheck)
+                newh = t + heuristic(ny, nx, naltitude, newcheck) + 1
+                seenkey = (ny, nx, ndy, ndx, naltitude, newcheck)
 
-                if seenkey not in bests or bests[seenkey] < naltitude:
-                    bests[seenkey] = naltitude
-                    frontier.append((t+1, naltitude, ny, nx, ndy, ndx, newcheck))
+                if seenkey not in bests or bests[seenkey] > newh:
+                    bests[seenkey] = newh
+                    heappush(frontier, (newh, t+1, naltitude, ny, nx, ndy, ndx, newcheck))
 
 
 def solve_c(data):
